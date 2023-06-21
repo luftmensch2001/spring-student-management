@@ -73,13 +73,13 @@ public class UserServiceImpl implements UserService {
 //        Check length userName
         if (user.getUserName().length() > 20) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    new ResponseObject("FAILED", "User Name length must be < 20 characters")
+                    new ResponseObject("FAILED", "User Name length must be <= 20 characters")
             );
         }
 //        Check length password
-        if (user.getPassword().length() > 15) {
+        if (user.getPassword().length() < 6 || user.getPassword().length() > 15) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    new ResponseObject("FAILED", "Password length must be < 15 characters")
+                    new ResponseObject("FAILED", "Password length must be from 6 to 15 characters")
             );
         }
         return null;
