@@ -1,7 +1,9 @@
 package com.student.server.models;
 
 import jakarta.persistence.*;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -22,9 +24,9 @@ public class StudentDTO {
     @Column(name= "average_scrore")
     Double averageScore;
     @Column(name= "date_of_birth")
-    Date dateOfBirth;
+    LocalDate dateOfBirth;
 
-    public StudentDTO(int studentId, String studentName, String studentCode, int infoId, String address, Double averageScore, Date dateOfBirth) {
+    public StudentDTO(int studentId, String studentName, String studentCode, int infoId, String address, Double averageScore, LocalDate dateOfBirth) {
         this.studentId = studentId;
         this.studentName = studentName;
         this.studentCode = studentCode;
@@ -82,11 +84,11 @@ public class StudentDTO {
         this.averageScore = averageScore;
     }
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 }

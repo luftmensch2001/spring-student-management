@@ -7,11 +7,15 @@ import com.student.server.models.StudentInfo;
 import com.student.server.repositories.StudentRepository;
 import com.student.server.services.StudentInfoService;
 import com.student.server.services.StudentService;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.Map;
 
 @RestController
@@ -26,8 +30,10 @@ public class StudentController {
 
 //    Get all students
     @GetMapping("/getAll")
-    public Iterable<StudentDTO> getAll() {
-        return studentService.getAllStudents();
+    public Iterable<StudentDTO> getAll(@RequestParam @Nullable String studentCode,
+                                       @RequestParam @Nullable String studentName,
+                                       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @Nullable LocalDate dateOfBirth) {
+        return studentService.getAllStudents(studentCode, studentName, dateOfBirth);
     }
 
 //    Get generated student code

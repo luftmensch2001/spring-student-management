@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +27,7 @@ public class StudentServiceImpl implements StudentService {
 
 //    List all students
     @Override
-    public Iterable<StudentDTO> getAllStudents() {
+    public Iterable<StudentDTO> getAllStudents(String studentCode, String studentName, LocalDate dateOfBirth) {
         List<StudentDTO> responseList = new ArrayList<>();
         List<Student> listStudent  = studentRepository.findAll();
         listStudent.forEach(student ->{
@@ -41,6 +42,18 @@ public class StudentServiceImpl implements StudentService {
                     studentInfo.getDateOfBirth());
             responseList.add(responseItem);
         });
+//        Filter by studentCode
+        if (studentCode != null && studentCode.trim().length() > 0) {
+            responseList.removeIf(item -> !item.getStudentCode().equals(studentCode));
+        }
+//        Filter by studentName
+        if (studentName != null && studentName.trim().length() > 0) {
+            responseList.removeIf(item -> !item.getStudentName().equals(studentName));
+        }
+//        Filter by studentCode
+        if (dateOfBirth != null) {
+            responseList.removeIf(item -> item.getDateOfBirth() == null || item.getDateOfBirth().compareTo(dateOfBirth) != 0);
+        }
         return responseList;
     }
 
