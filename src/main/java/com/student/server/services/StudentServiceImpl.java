@@ -42,7 +42,7 @@ public class StudentServiceImpl implements StudentService {
             responseList.add(responseItem);
         });
         return responseList;
-    };
+    }
 
 //    Create new student
     @Override
@@ -57,6 +57,7 @@ public class StudentServiceImpl implements StudentService {
                 new ResponseObject("OK", "Create student successfully", studentRepository.save(student))
         );
     }
+
 //    Create new student full info
     @Override
     public ResponseEntity<ResponseObject> createNewStudentFullInfo(StudentDTO studentDTO) {
@@ -146,6 +147,8 @@ public class StudentServiceImpl implements StudentService {
                 );
         }
     }
+
+//    Validate input
     public ResponseEntity<ResponseObject> checkValidInput(Student student) {
 //        Check required
         if (student.getStudentCode().length() == 0 || student.getStudentName().length() == 0) {
@@ -160,5 +163,5 @@ public class StudentServiceImpl implements StudentService {
             );
         }
         return null;
-    };
+    }
 }
