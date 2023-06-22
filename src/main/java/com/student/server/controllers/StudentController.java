@@ -39,18 +39,6 @@ public class StudentController {
 //    Create new student with full info
     @PostMapping("/create")
     public ResponseEntity<ResponseObject> createNewStudentFullInfo(@RequestBody StudentDTO studentDTO) {
-//        Add student
-        Student student = new Student(studentDTO.getStudentName(), studentDTO.getStudentCode());
-        ResponseEntity<ResponseObject> res = studentService.createNewStudent(student);
-//        Check add student successfully ?
-        if (res.getBody().getMessage().equals("FAILED")) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    new ResponseObject("FAILED", "Create student failed")
-            );
-        }
-//        Add studentInfo
-        Student newStudent = (Student) res.getBody().getObject();
-        StudentInfo studentInfo = new StudentInfo(newStudent.getStudentId(), studentDTO.getAddress(), studentDTO.getAverageScore(), studentDTO.getDateOfBirth());
-        return studentInfoService.createNewStudentInfo(studentInfo);
+        return studentService.createNewStudentFullInfo(studentDTO);
     }
 }
