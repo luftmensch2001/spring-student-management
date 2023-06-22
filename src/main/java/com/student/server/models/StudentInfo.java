@@ -15,7 +15,7 @@ public class StudentInfo {
     int studentId;
     @Column(name= "address")
     String address;
-    @Column(name= "average_scrore")
+    @Column(name= "average_score")
     Double averageScore;
     @Column(name= "date_of_birth")
     Date dateOfBirth;

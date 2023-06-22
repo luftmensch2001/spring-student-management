@@ -35,19 +35,22 @@ public class StudentServiceImpl implements StudentService {
 
 //    Generate Student code
     @Override
-    public String generateStudentCode() {
+    public ResponseEntity<ResponseObject> generateStudentCode() {
 //        Generate 8 chars code format: STUxxxxx
         while (true) {
             // Generate random int value from 1 to 99999
-            int randomInt = (int)Math.floor(Math.random() * (99999) + 1);
+            int randomInt = (int)Math.floor(Math.random() * (99998) + 1);
             String code = "STU" + Integer.toString(randomInt);
 //                Insert 0 before code number
             while (code.length() < 8) {
-                code = code.substring(0, 2) + '0' + code.substring(2);
+                code = code.substring(0, 3) + '0' + code.substring(3);
             }
 //            Check code existing ?
             boolean existedCode = (studentRepository.findByStudentCode(code) != null);
-            if (!existedCode) return code;
+            if (!existedCode)
+                return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("OK", code)
+                );
         }
     }
     public ResponseEntity<ResponseObject> checkValidInput(Student student) {

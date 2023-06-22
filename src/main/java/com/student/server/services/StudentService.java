@@ -7,5 +7,5 @@ import org.springframework.http.ResponseEntity;
 public interface StudentService {
     public Iterable<Student> getAllStudents();
     public ResponseEntity<ResponseObject> createNewStudent(Student student);
-    public String generateStudentCode();
+    public ResponseEntity<ResponseObject> generateStudentCode();
 }
