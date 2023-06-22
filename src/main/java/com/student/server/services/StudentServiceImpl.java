@@ -92,7 +92,25 @@ public class StudentServiceImpl implements StudentService {
             );
     }
 
-//    Generate Student code
+    @Override
+    public ResponseEntity<ResponseObject> deleteStudent(Integer studentId) {
+        StudentInfo foundStudentInfo = studentInfoRepository.findByStudentId(studentId);
+        if (foundStudentInfo != null) {
+            int infoId = foundStudentInfo.getInfoId();
+            studentInfoRepository.deleteById(infoId);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponseObject("FAILED", "Student not fount")
+            );
+        }
+
+        studentRepository.deleteById(studentId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("OK", "Deleted student")
+        );
+    }
+
+    //    Generate Student code
     @Override
     public ResponseEntity<ResponseObject> generateStudentCode() {
 //        Generate 8 chars code format: STUxxxxx

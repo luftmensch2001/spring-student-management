@@ -4,6 +4,7 @@ import com.student.server.models.ResponseObject;
 import com.student.server.models.Student;
 import com.student.server.models.StudentDTO;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface StudentService {
@@ -12,4 +13,5 @@ public interface StudentService {
     public ResponseEntity<ResponseObject> generateStudentCode();
     public ResponseEntity<ResponseObject> createNewStudentFullInfo(StudentDTO studentDTO);
     public ResponseEntity<ResponseObject> updateStudent(StudentDTO studentDTO);
+    public ResponseEntity<ResponseObject> deleteStudent(Integer studentId);
 }

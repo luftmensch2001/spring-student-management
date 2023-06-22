@@ -46,4 +46,9 @@ public class StudentController {
     public ResponseEntity<ResponseObject> updateStudent(@RequestBody StudentDTO studentDTO) {
         return studentService.updateStudent(studentDTO);
     }
+//    Delete student
+    @DeleteMapping("/{studentId}")
+    public ResponseEntity<ResponseObject> deleteStudent(@PathVariable Integer studentId) {
+        return studentService.deleteStudent(studentId);
+    }
 }
