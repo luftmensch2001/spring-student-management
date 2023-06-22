@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,7 +27,21 @@ public class StudentServiceImpl implements StudentService {
 //    List all students
     @Override
     public Iterable<StudentDTO> getAllStudents() {
-        return null;
+        List<StudentDTO> responseList = new ArrayList<>();
+        List<Student> listStudent  = studentRepository.findAll();
+        listStudent.forEach(student ->{
+            StudentInfo studentInfo = studentInfoRepository.findByStudentId(student.getStudentId());
+            StudentDTO responseItem = new StudentDTO(
+                    student.getStudentId(),
+                    student.getStudentName(),
+                    student.getStudentCode(),
+                    studentInfo.getInfoId(),
+                    studentInfo.getAddress(),
+                    studentInfo.getAverageScore(),
+                    studentInfo.getDateOfBirth());
+            responseList.add(responseItem);
+        });
+        return responseList;
     };
 
 //    Create new student
