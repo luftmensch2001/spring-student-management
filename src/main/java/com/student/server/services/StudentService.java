@@ -7,8 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface StudentService {
-    public Iterable<Student> getAllStudents();
+    public Iterable<StudentDTO> getAllStudents();
     public ResponseEntity<ResponseObject> createNewStudent(Student student);
     public ResponseEntity<ResponseObject> generateStudentCode();
     public ResponseEntity<ResponseObject> createNewStudentFullInfo(StudentDTO studentDTO);
+    public ResponseEntity<ResponseObject> updateStudent(StudentDTO studentDTO);
 }

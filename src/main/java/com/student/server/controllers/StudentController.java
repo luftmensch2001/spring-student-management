@@ -24,10 +24,10 @@ public class StudentController {
     @Autowired
     StudentInfoService studentInfoService;
 
-//    Get all
+//    Get all students
     @GetMapping("/getAll")
-    public Iterable<Student> getAll() {
-        return studentRepository.findAll();
+    public Iterable<StudentDTO> getAll() {
+        return studentService.getAllStudents();
     }
 
 //    Get generated student code
@@ -40,5 +40,10 @@ public class StudentController {
     @PostMapping("/create")
     public ResponseEntity<ResponseObject> createNewStudentFullInfo(@RequestBody StudentDTO studentDTO) {
         return studentService.createNewStudentFullInfo(studentDTO);
+    }
+//    Update student
+    @PutMapping("/update")
+    public ResponseEntity<ResponseObject> updateStudent(@RequestBody StudentDTO studentDTO) {
+        return studentService.updateStudent(studentDTO);
     }
 }

@@ -4,11 +4,14 @@ import com.student.server.models.ResponseObject;
 import com.student.server.models.Student;
 import com.student.server.models.StudentDTO;
 import com.student.server.models.StudentInfo;
+import com.student.server.repositories.StudentInfoRepository;
 import com.student.server.repositories.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -16,11 +19,13 @@ public class StudentServiceImpl implements StudentService {
     private StudentRepository studentRepository;
     @Autowired
     private StudentInfoService studentInfoService;
+    @Autowired
+    private StudentInfoRepository studentInfoRepository;
 
 //    List all students
     @Override
-    public Iterable<Student> getAllStudents() {
-        return studentRepository.findAll();
+    public Iterable<StudentDTO> getAllStudents() {
+        return null;
     };
 
 //    Create new student
@@ -28,7 +33,7 @@ public class StudentServiceImpl implements StudentService {
     public ResponseEntity<ResponseObject> createNewStudent(Student student) {
 //    Check valid input
         ResponseEntity<ResponseObject> res = checkValidInput(student);
-        if (res != null && res.getBody().getStatus() == "FAILED") {
+        if (res != null && res.getBody().getStatus().equals("FAILED")) {
             return res;
         }
 //        Create new student
@@ -43,7 +48,7 @@ public class StudentServiceImpl implements StudentService {
         Student student = new Student(studentDTO.getStudentName(), studentDTO.getStudentCode());
         ResponseEntity<ResponseObject> res = createNewStudent(student);
 //        Check add student successfully ?
-        if (res.getBody().getMessage().equals("FAILED")) {
+        if (res.getBody().getStatus().equals("FAILED")) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     new ResponseObject("FAILED", "Create student failed")
             );
@@ -52,6 +57,36 @@ public class StudentServiceImpl implements StudentService {
         Student newStudent = (Student) res.getBody().getObject();
         StudentInfo studentInfo = new StudentInfo(newStudent.getStudentId(), studentDTO.getAddress(), studentDTO.getAverageScore(), studentDTO.getDateOfBirth());
         return studentInfoService.createNewStudentInfo(studentInfo);
+    }
+
+//    Update student
+    @Override
+    public ResponseEntity<ResponseObject> updateStudent(StudentDTO studentDTO) {
+//        Update student table
+        Optional<Student> updatedStudent = studentRepository.findById(studentDTO.getStudentId())
+                .map(student -> {
+                    student.setStudentName(studentDTO.getStudentName());
+                    return studentRepository.save(student);
+                });
+//        Update student_info table
+        int infoId = studentInfoRepository.findByStudentId(studentDTO.getStudentId()).getInfoId();
+        Optional<StudentInfo> updatedStudentInfo = studentInfoRepository.findById(infoId)
+                .map(studentInfo -> {
+                    studentInfo.setAddress(studentDTO.getAddress());
+                    studentInfo.setAverageScore(studentDTO.getAverageScore());
+                    studentInfo.setDateOfBirth(studentDTO.getDateOfBirth());
+                    return studentInfoRepository.save(studentInfo);
+                });
+//        Check success ?
+        return (updatedStudent.isPresent() && updatedStudentInfo.isPresent()) ?
+            ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("OK", "Updated student")
+            ):
+            ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("FAILED", "Failed to update student")
+            );
+
+
     }
 
 //    Generate Student code
