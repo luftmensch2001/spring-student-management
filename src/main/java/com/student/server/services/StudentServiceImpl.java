@@ -68,6 +68,11 @@ public class StudentServiceImpl implements StudentService {
                     student.setStudentName(studentDTO.getStudentName());
                     return studentRepository.save(student);
                 });
+        if (!updatedStudent.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("FAILED", "Student not found")
+            );
+        }
 //        Update student_info table
         int infoId = studentInfoRepository.findByStudentId(studentDTO.getStudentId()).getInfoId();
         Optional<StudentInfo> updatedStudentInfo = studentInfoRepository.findById(infoId)
@@ -85,8 +90,6 @@ public class StudentServiceImpl implements StudentService {
             ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("FAILED", "Failed to update student")
             );
-
-
     }
 
 //    Generate Student code
