@@ -1,25 +1,28 @@
 package com.student.server.models;
 
 import jakarta.persistence.*;
-import org.springframework.cglib.core.Local;
+import lombok.Data;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
+import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
-@Table(name = "student_info")
-public class StudentInfo {
+@Data
+@RedisHash("StudentInfo")
+public class StudentInfo implements Serializable {
     @Id
-    @Column(name = "info_id")
+    @Indexed
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int infoId;
-    @Column(name = "student_id")
+    @Indexed
     int studentId;
-    @Column(name= "address")
+    @Indexed
     String address;
-    @Column(name= "average_score")
+    @Indexed
     Double averageScore;
-    @Column(name= "date_of_birth")
+    @Indexed
     LocalDate dateOfBirth;
 
     public StudentInfo() {

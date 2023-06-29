@@ -92,32 +92,14 @@ public class StudentServiceImpl implements StudentService {
 //    Update student
     @Override
     public ResponseEntity<ResponseObject> updateStudent(StudentDTO studentDTO) {
-//        Update student table
-        Optional<Student> updatedStudent = studentRepository.findById(studentDTO.getStudentId())
-                .map(student -> {
-                    student.setStudentName(studentDTO.getStudentName());
-                    return studentRepository.save(student);
-                });
-        if (!updatedStudent.isPresent()) {
+        boolean checkUpdateStudent = studentRepository.update(studentDTO);
+        boolean checkUpdateStudentInfo = studentInfoRepository.update(studentDTO);
+        if (checkUpdateStudent && checkUpdateStudentInfo) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("FAILED", "Student not found")
+                    new ResponseObject("OK", "Update successfully")
             );
-        }
-//        Update student_info table
-        int infoId = studentInfoRepository.findByStudentId(studentDTO.getStudentId()).getInfoId();
-        Optional<StudentInfo> updatedStudentInfo = studentInfoRepository.findById(infoId)
-                .map(studentInfo -> {
-                    studentInfo.setAddress(studentDTO.getAddress());
-                    studentInfo.setAverageScore(studentDTO.getAverageScore());
-                    studentInfo.setDateOfBirth(studentDTO.getDateOfBirth());
-                    return studentInfoRepository.save(studentInfo);
-                });
-//        Check success ?
-        return (updatedStudent.isPresent() && updatedStudentInfo.isPresent()) ?
-            ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK", "Updated student")
-            ):
-            ResponseEntity.status(HttpStatus.OK).body(
+        } else
+            return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("FAILED", "Failed to update student")
             );
     }

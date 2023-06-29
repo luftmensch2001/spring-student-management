@@ -1,29 +1,31 @@
 package com.student.server.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.springframework.cglib.core.Local;
+import org.springframework.data.redis.core.index.Indexed;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
-@Table(name = "student")
-@SecondaryTable(name = "student_info")
-public class StudentDTO {
+@Data
+public class StudentDTO implements Serializable {
     @Id
-    @Column(name = "student_id")
+    @Indexed
     int studentId;
-    @Column(name = "student_name")
+    @Indexed
     String studentName;
-    @Column(name = "student_code")
+    @Indexed
     String studentCode;
-    @Column(name = "info_id")
+    @Indexed
     int infoId;
-    @Column(name= "address")
+    @Indexed
     String address;
-    @Column(name= "average_scrore")
+    @Indexed
     Double averageScore;
-    @Column(name= "date_of_birth")
+    @Indexed
     LocalDate dateOfBirth;
 
     public StudentDTO(int studentId, String studentName, String studentCode, int infoId, String address, Double averageScore, LocalDate dateOfBirth) {

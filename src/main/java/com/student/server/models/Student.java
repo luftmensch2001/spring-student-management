@@ -1,17 +1,23 @@
 package com.student.server.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
+
+import java.io.Serializable;
 
 @Entity
-@Table(name = "student")
-public class Student {
+@Data
+@RedisHash("Student")
+public class Student implements Serializable {
     @Id
-    @Column(name = "student_id")
+    @Indexed
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int studentId;
-    @Column(name = "student_name")
+    @Indexed
     String studentName;
-    @Column(name = "student_code")
+    @Indexed
     String studentCode;
 
     public Student() {
