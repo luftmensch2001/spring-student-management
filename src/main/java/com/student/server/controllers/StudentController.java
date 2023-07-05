@@ -1,25 +1,20 @@
 package com.student.server.controllers;
 
-import com.student.server.models.ResponseObject;
-import com.student.server.models.Student;
-import com.student.server.models.StudentDTO;
-import com.student.server.models.StudentInfo;
+import com.student.server.DTO.StudentDTO;
 import com.student.server.repositories.StudentRepository;
 import com.student.server.services.StudentInfoService;
 import com.student.server.services.StudentService;
 import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/student")
+@RequestMapping("/students")
 public class StudentController {
     @Autowired
     StudentRepository studentRepository;
@@ -29,32 +24,49 @@ public class StudentController {
     StudentInfoService studentInfoService;
 
 //    Get all students
-    @GetMapping("/getAll")
-    public Iterable<StudentDTO> getAll(@RequestParam @Nullable String studentCode,
+    @GetMapping("/")
+    public ResponseEntity<?> getAll(@RequestParam @Nullable String studentCode,
                                        @RequestParam @Nullable String studentName,
                                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @Nullable LocalDate dateOfBirth) {
-        return studentService.getAllStudents(studentCode, studentName, dateOfBirth);
+        return ResponseEntity.ok()
+                .body(studentService.getAllStudents(studentCode, studentName, dateOfBirth));
     }
 
 //    Get generated student code
     @GetMapping("/generatedCode")
-    public ResponseEntity<ResponseObject> genarateStudentCode() {
-        return studentService.generateStudentCode();
+    public ResponseEntity<?> genarateStudentCode() {
+        return ResponseEntity.ok()
+                .body(studentService.generateStudentCode());
     }
 
 //    Create new student with full info
     @PostMapping("/create")
-    public ResponseEntity<ResponseObject> createNewStudentFullInfo(@RequestBody StudentDTO studentDTO) {
-        return studentService.createNewStudentFullInfo(studentDTO);
+    public ResponseEntity<?> createNewStudentFullInfo(@RequestBody StudentDTO studentDTO) {
+        Pair<Boolean, Object> result = studentService.createNewStudentFullInfo(studentDTO);
+        if (result.getFirst()) {
+            return ResponseEntity.ok().body(result.getSecond());
+        } else {
+            return ResponseEntity.badRequest().body(result.getSecond());
+        }
     }
 //    Update student
-    @PutMapping("/update")
-    public ResponseEntity<ResponseObject> updateStudent(@RequestBody StudentDTO studentDTO) {
-        return studentService.updateStudent(studentDTO);
+    @PutMapping("/update/{studentId}")
+    public ResponseEntity<?> updateStudent(@PathVariable Integer studentId, @RequestBody StudentDTO studentDTO) {
+        Pair<Boolean, Object> result = studentService.updateStudent(studentId, studentDTO);
+        if (result.getFirst()) {
+            return ResponseEntity.ok().body(result.getSecond());
+        } else {
+            return ResponseEntity.badRequest().body(result.getSecond());
+        }
     }
 //    Delete student
     @DeleteMapping("/{studentId}")
-    public ResponseEntity<ResponseObject> deleteStudent(@PathVariable Integer studentId) {
-        return studentService.deleteStudent(studentId);
+    public ResponseEntity<?> deleteStudent(@PathVariable Integer studentId) {
+        Pair<Boolean, Object> result = studentService.deleteStudent(studentId);
+        if (result.getFirst()) {
+            return ResponseEntity.ok().body(result.getSecond());
+        } else {
+            return ResponseEntity.badRequest().body(result.getSecond());
+        }
     }
 }

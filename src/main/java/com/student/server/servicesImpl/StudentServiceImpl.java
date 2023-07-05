@@ -1,14 +1,14 @@
-package com.student.server.services;
+package com.student.server.servicesImpl;
 
-import com.student.server.models.ResponseObject;
 import com.student.server.models.Student;
-import com.student.server.models.StudentDTO;
+import com.student.server.DTO.StudentDTO;
 import com.student.server.models.StudentInfo;
 import com.student.server.repositories.StudentInfoRepository;
 import com.student.server.repositories.StudentRepository;
+import com.student.server.services.StudentInfoService;
+import com.student.server.services.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -59,52 +59,47 @@ public class StudentServiceImpl implements StudentService {
 
 //    Create new student
     @Override
-    public ResponseEntity<ResponseObject> createNewStudent(Student student) {
-//    Check valid input
-        ResponseEntity<ResponseObject> res = checkValidInput(student);
-        if (res != null && res.getBody().getStatus().equals("FAILED")) {
-            return res;
+    public Pair<Boolean, Object> createNewStudent(Student student) {
+//        Check valid input
+        Pair<Boolean, Object> res = checkValidInput(student);
+        if (res.getFirst() == false) {
+            return res; // return failed with message
         }
 //        Create new student
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK", "Create student successfully", studentRepository.save(student))
-        );
+        return Pair.of(true, studentRepository.save(student));
     }
 
 //    Create new student full info
     @Override
-    public ResponseEntity<ResponseObject> createNewStudentFullInfo(StudentDTO studentDTO) {
+    public Pair<Boolean, Object> createNewStudentFullInfo(StudentDTO studentDTO) {
 //        Add student
         Student student = new Student(studentDTO.getStudentName(), studentDTO.getStudentCode());
-        ResponseEntity<ResponseObject> res = createNewStudent(student);
+        Pair<Boolean, Object> res = createNewStudent(student);
 //        Check add student successfully ?
-        if (res.getBody().getStatus().equals("FAILED")) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    new ResponseObject("FAILED", "Create student failed")
-            );
+        if (res.getFirst() == false) {
+            return res; // return failed with message
         }
 //        Add studentInfo
-        Student newStudent = (Student) res.getBody().getObject();
+        Student newStudent = (Student) res.getSecond();
         StudentInfo studentInfo = new StudentInfo(newStudent.getStudentId(), studentDTO.getAddress(), studentDTO.getAverageScore(), studentDTO.getDateOfBirth());
         return studentInfoService.createNewStudentInfo(studentInfo);
     }
 
 //    Update student
     @Override
-    public ResponseEntity<ResponseObject> updateStudent(StudentDTO studentDTO) {
+    public Pair<Boolean, Object> updateStudent(Integer studentId, StudentDTO studentDTO) {
 //        Update student table
-        Optional<Student> updatedStudent = studentRepository.findById(studentDTO.getStudentId())
+        Optional<Student> updatedStudent = studentRepository.findById(studentId)
                 .map(student -> {
                     student.setStudentName(studentDTO.getStudentName());
                     return studentRepository.save(student);
                 });
         if (!updatedStudent.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("FAILED", "Student not found")
-            );
+            return Pair.of(false, "Student not found");
         }
+
 //        Update student_info table
-        int infoId = studentInfoRepository.findByStudentId(studentDTO.getStudentId()).getInfoId();
+        int infoId = studentInfoRepository.findByStudentId(studentId).getInfoId();
         Optional<StudentInfo> updatedStudentInfo = studentInfoRepository.findById(infoId)
                 .map(studentInfo -> {
                     studentInfo.setAddress(studentDTO.getAddress());
@@ -114,35 +109,26 @@ public class StudentServiceImpl implements StudentService {
                 });
 //        Check success ?
         return (updatedStudent.isPresent() && updatedStudentInfo.isPresent()) ?
-            ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK", "Updated student")
-            ):
-            ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("FAILED", "Failed to update student")
-            );
+                Pair.of(true, "Updated student") :
+                Pair.of(false, "Failed to update student");
     }
 
     @Override
-    public ResponseEntity<ResponseObject> deleteStudent(Integer studentId) {
+    public Pair<Boolean, Object> deleteStudent(Integer studentId) {
         StudentInfo foundStudentInfo = studentInfoRepository.findByStudentId(studentId);
         if (foundStudentInfo != null) {
             int infoId = foundStudentInfo.getInfoId();
             studentInfoRepository.deleteById(infoId);
+            studentRepository.deleteById(studentId);
+            return Pair.of(true, "Deleted student");
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new ResponseObject("FAILED", "Student not fount")
-            );
+            return Pair.of(false, "Student not found");
         }
-
-        studentRepository.deleteById(studentId);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK", "Deleted student")
-        );
     }
 
     //    Generate Student code
     @Override
-    public ResponseEntity<ResponseObject> generateStudentCode() {
+    public String generateStudentCode() {
 //        Generate 8 chars code format: STUxxxxx
         while (true) {
             // Generate random int value from 1 to 99999
@@ -155,26 +141,20 @@ public class StudentServiceImpl implements StudentService {
 //            Check code existing ?
             boolean existedCode = (studentRepository.findByStudentCode(code) != null);
             if (!existedCode)
-                return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("OK", code)
-                );
+                return code;
         }
     }
 
 //    Validate input
-    public ResponseEntity<ResponseObject> checkValidInput(Student student) {
+    public Pair<Boolean, Object> checkValidInput(Student student) {
 //        Check required
         if (student.getStudentCode().length() == 0 || student.getStudentName().length() == 0) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new ResponseObject("FAILED", "Missing information")
-            );
+            return Pair.of(false, "Missing information");
         }
 //        Check length
         if (student.getStudentName().length() > 20) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    new ResponseObject("FAILED", "Student name length must be <= 20 characters")
-            );
+            return Pair.of(false, "Student name length must be <= 20 characters");
         }
-        return null;
+        return Pair.of(true, "OK"); // valid input
     }
 }

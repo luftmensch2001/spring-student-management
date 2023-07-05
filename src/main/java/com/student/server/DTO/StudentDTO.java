@@ -1,27 +1,32 @@
-package com.student.server.models;
+package com.student.server.DTO;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "student")
-public class Student {
+@SecondaryTable(name = "student_info")
+public class StudentDTO {
     @Id
     @Column(name = "student_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int studentId;
     @Column(name = "student_name")
     String studentName;
     @Column(name = "student_code")
     String studentCode;
-
-    public Student(String studentName, String studentCode) {
-        this.studentName = studentName;
-        this.studentCode = studentCode;
-    }
+    @Column(name = "info_id")
+    int infoId;
+    @Column(name= "address")
+    String address;
+    @Column(name= "average_score")
+    Double averageScore;
+    @Column(name= "date_of_birth")
+    LocalDate dateOfBirth;
 }
