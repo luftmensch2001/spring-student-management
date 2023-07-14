@@ -15,7 +15,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/students")
-@CrossOrigin (origins = "http://localhost:8080" , exposedHeaders = "Authorization")
+@CrossOrigin (origins = "*" , exposedHeaders = "Authorization", allowedHeaders = "*")
 public class StudentController {
     @Autowired
     StudentRepository studentRepository;
@@ -25,7 +25,7 @@ public class StudentController {
     StudentInfoService studentInfoService;
 
 //    Get all students
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<?> getAll(@RequestParam @Nullable String studentCode,
                                        @RequestParam @Nullable String studentName,
                                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @Nullable LocalDate dateOfBirth) {
