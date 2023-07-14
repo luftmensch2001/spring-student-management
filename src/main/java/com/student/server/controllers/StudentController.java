@@ -39,6 +39,16 @@ public class StudentController {
         return ResponseEntity.ok()
                 .body(studentService.generateStudentCode());
     }
+//    Get student by id
+    @GetMapping("/{studentId}")
+    public ResponseEntity<?> getStudentById(@PathVariable Integer studentId) {
+        Pair<Boolean, Object> result = studentService.getStudentById(studentId);
+        if (result.getFirst()) {
+            return ResponseEntity.ok().body(result.getSecond());
+        } else {
+            return ResponseEntity.badRequest().body(result.getSecond());
+        }
+    }
 
 //    Create new student with full info
     @PostMapping("/create")

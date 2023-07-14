@@ -57,7 +57,26 @@ public class StudentServiceImpl implements StudentService {
         return responseList;
     }
 
-//    Create new student
+    @Override
+    public Pair<Boolean, Object> getStudentById(Integer studentId) {
+        Optional<Student> student = studentRepository.findById(studentId);
+        if (!student.isPresent()) {
+            return Pair.of(false, "Not found");
+        }
+//        Get info
+        StudentInfo studentInfo = studentInfoRepository.findByStudentId(student.get().getStudentId());
+        StudentDTO responseItem = new StudentDTO(
+                student.get().getStudentId(),
+                student.get().getStudentName(),
+                student.get().getStudentCode(),
+                studentInfo.getInfoId(),
+                studentInfo.getAddress(),
+                studentInfo.getAverageScore(),
+                studentInfo.getDateOfBirth());
+        return Pair.of(true, responseItem);
+    }
+
+    //    Create new student
     @Override
     public Pair<Boolean, Object> createNewStudent(Student student) {
 //        Check valid input

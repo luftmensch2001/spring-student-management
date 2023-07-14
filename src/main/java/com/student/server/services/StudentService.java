@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 public interface StudentService {
     public Iterable<StudentDTO> getAllStudents(String studentCode, String studentName, LocalDate dateOfBirth);
+    public Pair<Boolean, Object> getStudentById(Integer studentId);
     public Pair<Boolean, Object> createNewStudent(Student student);
     public String generateStudentCode();
     public Pair<Boolean, Object> createNewStudentFullInfo(StudentDTO studentDTO);
