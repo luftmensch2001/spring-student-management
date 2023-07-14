@@ -15,6 +15,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/students")
+@CrossOrigin (origins = "http://localhost:8080" , exposedHeaders = "Authorization")
 public class StudentController {
     @Autowired
     StudentRepository studentRepository;
